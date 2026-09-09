@@ -5,6 +5,7 @@ import {
   Upload,
   Plus,
   Pencil,
+  Trash2,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ export default function Contacts() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/contacts",
+        "http://salihiyamaritimeairltd.co.ke/api/contacts",
         {
           method: "GET",
           headers: {
@@ -72,7 +73,42 @@ export default function Contacts() {
   const filteredContacts = contacts.filter(
     (contact) => {
       const searchText = search.toLowerCase();
+      const handleDelete = async (contactId) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this contact?"
+  );
 
+  if (!confirmed) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://salihiyamaritimeairltd.co.ke/api/contacts/${contactId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to delete contact");
+    }
+
+    // Remove the deleted contact from the screen immediately
+    setContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact._id !== contactId)
+    );
+  } catch (error) {
+    console.error("Delete contact error:", error);
+    setError(error.message || "Unable to delete contact");
+  }
+};
       return (
         contact.name
           ?.toLowerCase()
@@ -239,16 +275,27 @@ export default function Contacts() {
 
         <td>{contact.status || "-"}</td>
 
-        <td>
-          <button
-            className="edit-btn"
-            onClick={() =>
-              navigate(`/edit-contact/${contact._id}`)
-            }
-          >
-            <Pencil size={16} />
-          </button>
-        </td>
+       <td>
+  <div className="contact-actions">
+    <button
+      className="edit-btn"
+      onClick={() =>
+        navigate(`/edit-contact/${contact._id}`)
+      }
+      title="Edit contact"
+    >
+      <Pencil size={16} />
+    </button>
+
+    <button
+      className="delete-btn"
+      onClick={() => handleDelete(contact._id)}
+      title="Delete contact"
+    >
+      <Trash2 size={16} />
+    </button>
+  </div>
+</td>
       </tr>
     ))}
   </tbody>

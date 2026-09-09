@@ -1,7 +1,10 @@
+
 import "../styles/SendSms.css";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Send } from "lucide-react";
+
+import { ArrowLeft, Send, Upload } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 
 export default function SendSms() {
@@ -9,18 +12,16 @@ export default function SendSms() {
 
   const [contacts, setContacts] = useState([]);
   const [templates, setTemplates] = useState([]);
-
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
-
   const [campaignName, setCampaignName] = useState("");
   const [message, setMessage] = useState("");
-
   const [schedule, setSchedule] = useState(false);
   const [scheduledAt, setScheduledAt] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -33,19 +34,29 @@ export default function SendSms() {
         setLoading(true);
         setError("");
 
+        if (!token) {
+          throw new Error("You are not logged in.");
+        }
+
         const [contactsResponse, templatesResponse] =
           await Promise.all([
-            fetch("http://localhost:5000/api/contacts?limit=100", {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }),
+            fetch(
+              "http://salihiyamaritimeairltd.co.ke/api/contacts?limit=100",
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            ),
 
-            fetch("http://localhost:5000/api/templates", {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }),
+            fetch(
+              "http://salihiyamaritimeairltd.co.ke/api/templates",
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            ),
           ]);
 
         const contactsResult =
@@ -69,11 +80,11 @@ export default function SendSms() {
         }
 
         setContacts(
-          contactsResult.data.contacts || []
+          contactsResult.data?.contacts || []
         );
 
         setTemplates(
-          templatesResult.data.templates || []
+          templatesResult.data?.templates || []
         );
       } catch (error) {
         console.error(
@@ -93,7 +104,7 @@ export default function SendSms() {
     loadData();
   }, [token]);
 
-  // Select/deselect contact
+  // Select / deselect contact
   const toggleContact = (contactId) => {
     setSelectedContacts((current) => {
       if (current.includes(contactId)) {
@@ -106,7 +117,7 @@ export default function SendSms() {
     });
   };
 
-  // Select/deselect all
+  // Select / deselect all contacts
   const toggleAllContacts = () => {
     if (
       selectedContacts.length ===
@@ -140,7 +151,7 @@ export default function SendSms() {
     }
   };
 
-  // Send SMS
+  // Send or schedule SMS
   const handleSend = async (e) => {
     e.preventDefault();
 
@@ -172,7 +183,7 @@ export default function SendSms() {
       setSending(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/sms/send",
+        "http://salihiyamaritimeairltd.co.ke/api/sms/send",
         {
           method: "POST",
 
@@ -183,13 +194,17 @@ export default function SendSms() {
 
           body: JSON.stringify({
             contactIds: selectedContacts,
+
             message,
+
             campaignName:
               campaignName.trim() || undefined,
-            scheduledAt:
-              schedule
-                ? new Date(scheduledAt).toISOString()
-                : undefined,
+
+            scheduledAt: schedule
+              ? new Date(
+                  scheduledAt
+                ).toISOString()
+              : undefined,
           }),
         }
       );
@@ -213,13 +228,13 @@ export default function SendSms() {
         );
       }
 
+      // Clear form after successful operation
       setSelectedContacts([]);
       setCampaignName("");
       setMessage("");
       setSelectedTemplate("");
       setSchedule(false);
       setScheduledAt("");
-
     } catch (error) {
       console.error(
         "Send SMS error:",
@@ -238,7 +253,9 @@ export default function SendSms() {
   if (loading) {
     return (
       <div className="send-sms-page">
-        <p>Loading contacts and templates...</p>
+        <p>
+          Loading contacts and templates...
+        </p>
       </div>
     );
   }
@@ -246,8 +263,8 @@ export default function SendSms() {
   return (
     <div className="send-sms-page">
 
+      {/* Header */}
       <div className="send-sms-header">
-
         <h2>
           <button
             type="button"
@@ -258,30 +275,15 @@ export default function SendSms() {
 
           Send SMS
         </h2>
-
       </div>
-
-      {error && (
-        <div className="sms-error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="sms-success">
-          {success}
-        </div>
-      )}
 
       <form onSubmit={handleSend}>
 
-        {/* Campaign */}
+        {/* Campaign Details */}
         <div className="sms-card">
-
           <h3>Campaign Details</h3>
 
           <div className="form-group">
-
             <label>
               Campaign Name
             </label>
@@ -296,9 +298,7 @@ export default function SendSms() {
                 )
               }
             />
-
           </div>
-
         </div>
 
         {/* Contacts */}
@@ -306,13 +306,27 @@ export default function SendSms() {
 
           <div className="section-heading">
 
-            <h3>
-              Select Contacts
-            </h3>
+            <div>
+              <h3>
+                Select Contacts
+              </h3>
 
-            <span>
-              {selectedContacts.length} selected
-            </span>
+              <span>
+                {selectedContacts.length} selected
+              </span>
+            </div>
+
+            {/* Import Contacts */}
+            <button
+              type="button"
+              className="import-contacts-btn"
+              onClick={() =>
+                navigate("/import-contacts")
+              }
+            >
+              <Upload size={17} />
+              Import Contacts
+            </button>
 
           </div>
 
@@ -322,8 +336,8 @@ export default function SendSms() {
             </p>
           ) : (
             <>
+              {/* Select All */}
               <label className="select-all">
-
                 <input
                   type="checkbox"
                   checked={
@@ -338,15 +352,14 @@ export default function SendSms() {
                 Select All
               </label>
 
+              {/* Contacts List */}
               <div className="contacts-list">
 
                 {contacts.map((contact) => (
-
                   <label
                     key={contact._id}
                     className="contact-option"
                   >
-
                     <input
                       type="checkbox"
                       checked={selectedContacts.includes(
@@ -368,15 +381,12 @@ export default function SendSms() {
                         {contact.phoneNumber}
                       </span>
                     </div>
-
                   </label>
-
                 ))}
 
               </div>
             </>
           )}
-
         </div>
 
         {/* Message */}
@@ -428,7 +438,9 @@ export default function SendSms() {
               placeholder="Type your message here..."
               value={message}
               onChange={(e) =>
-                setMessage(e.target.value)
+                setMessage(
+                  e.target.value
+                )
               }
             />
 
@@ -465,6 +477,7 @@ export default function SendSms() {
             />
 
             Schedule this SMS for later
+
           </label>
 
           {schedule && (
@@ -482,17 +495,28 @@ export default function SendSms() {
                     e.target.value
                   )
                 }
-                min={
-                  new Date()
-                    .toISOString()
-                    .slice(0, 16)
-                }
+                min={new Date()
+                  .toISOString()
+                  .slice(0, 16)}
               />
 
             </div>
           )}
 
         </div>
+
+        {/* Error / Success Messages */}
+        {error && (
+          <div className="sms-error">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="sms-success">
+            {success}
+          </div>
+        )}
 
         {/* Buttons */}
         <div className="sms-actions">
@@ -512,7 +536,6 @@ export default function SendSms() {
             className="send-btn"
             disabled={sending}
           >
-
             <Send size={18} />
 
             {sending
@@ -520,7 +543,6 @@ export default function SendSms() {
               : schedule
               ? "Schedule SMS"
               : "Send SMS"}
-
           </button>
 
         </div>
@@ -530,3 +552,5 @@ export default function SendSms() {
     </div>
   );
 }
+
+
