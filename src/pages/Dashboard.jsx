@@ -43,7 +43,7 @@ export default function Dashboard() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/dashboard/stats",
+          "http://salihiyamaritimeairltd.co.ke/api/dashboard/stats",
           {
             method: "GET",
             headers: {

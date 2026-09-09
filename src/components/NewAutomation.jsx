@@ -52,7 +52,7 @@ export default function CreateAutomation() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/templates",
+        "http://salihiyamaritimeairltd.co.ke/api/templates",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function CreateAutomation() {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/automations/${id}`,
+          `http://salihiyamaritimeairltd.co.ke/api/automations/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -233,8 +233,8 @@ export default function CreateAutomation() {
       };
 
       const url = isEditing
-        ? `http://localhost:5000/api/automations/${id}`
-        : "http://localhost:5000/api/automations";
+        ? `http://salihiyamaritimeairltd.co.ke/api/automations/${id}`
+        : "http://salihiyamaritimeairltd.co.ke/api/automations";
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
