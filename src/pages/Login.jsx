@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://salihiyamaritimeairltd.co.ke/api/auth/login", {
+      const response = await fetch("https://salihiyamaritimeairltd.co.ke/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

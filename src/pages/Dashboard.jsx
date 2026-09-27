@@ -43,7 +43,7 @@ export default function Dashboard() {
         }
 
         const response = await fetch(
-          "http://salihiyamaritimeairltd.co.ke/api/dashboard/stats",
+          "https://salihiyamaritimeairltd.co.ke/api/dashboard/stats",
           {
             method: "GET",
             headers: {

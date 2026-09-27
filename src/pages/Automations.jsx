@@ -26,7 +26,7 @@ export default function Automations() {
       }
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/automations",
+        "https://salihiyamaritimeairltd.co.ke/api/automations",
         {
           method: "GET",
           headers: {
@@ -65,7 +65,7 @@ export default function Automations() {
       }
 
       const response = await fetch(
-        `http://salihiyamaritimeairltd.co.ke/api/automations/${id}`,
+        `https://salihiyamaritimeairltd.co.ke/api/automations/${id}`,
         {
           method: "PUT",
           headers: {

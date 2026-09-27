@@ -46,7 +46,7 @@ export default function ImportContacts() {
       formData.append("file", file);
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/upload/contacts",
+        "https://salihiyamaritimeairltd.co.ke/api/upload/contacts",
         {
           method: "POST",
           headers: {

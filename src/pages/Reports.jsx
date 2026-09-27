@@ -12,7 +12,7 @@ export default function Reports() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          "http://salihiyamaritimeairltd.co.ke/api/dashboard/stats",
+          "https://salihiyamaritimeairltd.co.ke/api/dashboard/stats",
           {
             headers: {
               Authorization: `Bearer ${token}`,

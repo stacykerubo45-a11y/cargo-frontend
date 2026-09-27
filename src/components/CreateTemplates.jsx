@@ -33,7 +33,7 @@ export default function CreateTemplate() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `http://salihiyamaritimeairltd.co.ke/api/templates/${id}`,
+          `https://salihiyamaritimeairltd.co.ke/api/templates/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -103,8 +103,8 @@ export default function CreateTemplate() {
       }
 
       const url = isEditing
-        ? `http://salihiyamaritimeairltd.co.ke/api/templates/${id}`
-        : "http://salihiyamaritimeairltd.co.ke/api/templates";
+        ? `https://salihiyamaritimeairltd.co.ke/api/templates/${id}`
+        : "https://salihiyamaritimeairltd.co.ke/api/templates";
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",

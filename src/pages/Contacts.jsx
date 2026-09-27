@@ -36,7 +36,7 @@ export default function Contacts() {
       }
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/contacts",
+        "https://salihiyamaritimeairltd.co.ke/api/contacts",
         {
           method: "GET",
           headers: {
@@ -84,7 +84,7 @@ export default function Contacts() {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `http://salihiyamaritimeairltd.co.ke/api/contacts/${contactId}`,
+      `https://salihiyamaritimeairltd.co.ke/api/contacts/${contactId}`,
       {
         method: "DELETE",
         headers: {

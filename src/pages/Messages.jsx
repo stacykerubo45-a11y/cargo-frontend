@@ -32,7 +32,7 @@ export default function MessageTemplates() {
       }
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/templates",
+        "https://salihiyamaritimeairltd.co.ke/api/templates",
         {
           method: "GET",
           headers: {
@@ -74,7 +74,7 @@ export default function MessageTemplates() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://salihiyamaritimeairltd.co.ke/api/templates/${id}`,
+        `https://salihiyamaritimeairltd.co.ke/api/templates/${id}`,
         {
           method: "DELETE",
           headers: {

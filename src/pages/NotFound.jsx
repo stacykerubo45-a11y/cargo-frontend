@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Package, ArrowLeft, LayoutDashboard } from "lucide-react";
-import "./NotFound.css";
+import "../styles/NotFound.css";
 
 function NotFound() {
   return (

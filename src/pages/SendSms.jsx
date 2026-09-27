@@ -41,7 +41,7 @@ export default function SendSms() {
         const [contactsResponse, templatesResponse] =
           await Promise.all([
             fetch(
-              "http://salihiyamaritimeairltd.co.ke/api/contacts?limit=100",
+              "https://salihiyamaritimeairltd.co.ke/api/contacts?limit=100",
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ export default function SendSms() {
             ),
 
             fetch(
-              "http://salihiyamaritimeairltd.co.ke/api/templates",
+              "https://salihiyamaritimeairltd.co.ke/api/templates",
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -183,7 +183,7 @@ export default function SendSms() {
       setSending(true);
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/sms/send",
+        "https://salihiyamaritimeairltd.co.ke/api/sms/send",
         {
           method: "POST",
 

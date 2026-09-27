@@ -42,7 +42,7 @@ const [appointmentDate, setAppointmentDate] = useState("");
       }
 
       const response = await fetch(
-        "http://salihiyamaritimeairltd.co.ke/api/contacts",
+        "https://salihiyamaritimeairltd.co.ke/api/contacts",
         {
           method: "POST",
           headers: {

@@ -94,7 +94,7 @@ export default function CreateAutomation() {
         }
 
         const response = await fetch(
-          `http://salihiyamaritimeairltd.co.ke/api/automations/${id}`,
+          `https://salihiyamaritimeairltd.co.ke/api/automations/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -233,8 +233,8 @@ export default function CreateAutomation() {
       };
 
       const url = isEditing
-        ? `http://salihiyamaritimeairltd.co.ke/api/automations/${id}`
-        : "http://salihiyamaritimeairltd.co.ke/api/automations";
+        ? `https://salihiyamaritimeairltd.co.ke/api/automations/${id}`
+        : "https://salihiyamaritimeairltd.co.ke/api/automations";
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",

@@ -14,7 +14,7 @@ export default function MessageHistory() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          "http://salihiyamaritimeairltd.co.ke/api/sms/history?page=1&limit=20",
+          "https://salihiyamaritimeairltd.co.ke/api/sms/history?page=1&limit=20",
           {
             headers: {
               Authorization: `Bearer ${token}`,

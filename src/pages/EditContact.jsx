@@ -41,7 +41,7 @@ const [appointmentDate, setAppointmentDate] = useState("");
       }
 
       const response = await fetch(
-        `http://salihiyamaritimeairltd.co.ke/api/contacts/${id}`,
+        `https://salihiyamaritimeairltd.co.ke/api/contacts/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,7 +117,7 @@ setAppointmentDate(
       }
 
       const response = await fetch(
-        `http://salihiyamaritimeairltd.co.ke/api/contacts/${id}`,
+        `https://salihiyamaritimeairltd.co.ke/api/contacts/${id}`,
         {
           method: "PUT",
           headers: {
