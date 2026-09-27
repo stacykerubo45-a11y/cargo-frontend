@@ -12,6 +12,7 @@ import Automations from "./pages/Automations";
 import History from "./pages/History";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -87,10 +88,11 @@ function App() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           
+          
 
         </Route>
         </Route>
-
+       <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
