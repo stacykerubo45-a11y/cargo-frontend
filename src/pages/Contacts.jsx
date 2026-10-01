@@ -7,7 +7,6 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-
 import { useEffect, useState } from "react";
 import "../styles/Contacts.css";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +19,17 @@ export default function Contacts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 1,
+    limit: 100,
+  });
+
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [page]);
 
   const fetchContacts = async () => {
     try {
@@ -36,7 +43,7 @@ export default function Contacts() {
       }
 
       const response = await fetch(
-        "https://salihiyamaritimeairltd.co.ke/api/contacts",
+        `https://salihiyamaritimeairltd.co.ke/api/contacts?page=${page}&limit=100`,
         {
           method: "GET",
           headers: {
@@ -53,106 +60,110 @@ export default function Contacts() {
           result.message || "Failed to load contacts"
         );
       }
-      
 
-      const contactsData =
-        result.data?.contacts || [];
+      const contactsData = result.data?.contacts || [];
 
       setContacts(contactsData);
+
+      if (result.data?.pagination) {
+        setPagination(result.data.pagination);
+      }
     } catch (error) {
       console.error("Contacts error:", error);
-
       setError(
         error.message || "Unable to load contacts"
       );
     } finally {
       setLoading(false);
     }
-  }; const handleDelete = async (contactId) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this contact?"
-  );
+  };
 
-  if (!confirmed) return;
+  const handleDelete = async (contactId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this contact?"
+    );
 
-  try {
-    const token = localStorage.getItem("token");
+    if (!confirmed) return;
 
-    const response = await fetch(
-      `https://salihiyamaritimeairltd.co.ke/api/contacts/${contactId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `https://salihiyamaritimeairltd.co.ke/api/contacts/${contactId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Failed to delete contact"
+        );
       }
-    );
 
-    const result = await response.json();
+      // Remove deleted contact immediately
+      setContacts((prevContacts) =>
+        prevContacts.filter(
+          (contact) => contact._id !== contactId
+        )
+      );
 
-    if (!response.ok) {
-      throw new Error(result.message || "Failed to delete contact");
-    }
-
-    // Remove the deleted contact from the screen immediately
-    setContacts((prevContacts) =>
-      prevContacts.filter((contact) => contact._id !== contactId)
-    );
-  } catch (error) {
-    console.error("Delete contact error:", error);
-    setError(error.message || "Unable to delete contact");
-  }
-};
-
-  // Search by multiple contact fields
-  const filteredContacts = contacts.filter(
-    (contact) => {
-      const searchText = search.toLowerCase();
-     
-      return (
-        contact.name
-          ?.toLowerCase()
-          .includes(searchText) ||
-
-        contact.phoneNumber
-          ?.toLowerCase()
-          .includes(searchText) ||
-
-        contact.cargoNumber
-          ?.toLowerCase()
-          .includes(searchText) ||
-
-        contact.carton
-          ?.toLowerCase()
-          .includes(searchText) ||
-
-        contact.awb
-          ?.toLowerCase()
-          .includes(searchText) ||
-
-        contact.destination
-          ?.toLowerCase()
-          .includes(searchText)
+      // Update total count
+      setPagination((prev) => ({
+        ...prev,
+        total: Math.max(prev.total - 1, 0),
+      }));
+    } catch (error) {
+      console.error("Delete contact error:", error);
+      setError(
+        error.message || "Unable to delete contact"
       );
     }
-  );
+  };
+
+  // Search by multiple contact fields
+  const filteredContacts = contacts.filter((contact) => {
+    const searchText = search.toLowerCase();
+
+    return (
+      contact.name
+        ?.toLowerCase()
+        .includes(searchText) ||
+      contact.phoneNumber
+        ?.toLowerCase()
+        .includes(searchText) ||
+      contact.cargoNumber
+        ?.toLowerCase()
+        .includes(searchText) ||
+      contact.carton
+        ?.toLowerCase()
+        .includes(searchText) ||
+      contact.awb
+        ?.toLowerCase()
+        .includes(searchText) ||
+      contact.destination
+        ?.toLowerCase()
+        .includes(searchText)
+    );
+  });
 
   return (
     <div className="contacts-page">
 
       {/* Header */}
       <div className="contacts-header">
-
         <h2>Contacts</h2>
 
         <div className="header-actions">
-
           <button
             className="import-btn"
-            onClick={() =>
-              navigate("/import-contacts")
-            }
+            onClick={() => navigate("/import-contacts")}
           >
             <Upload size={18} />
             Import
@@ -160,41 +171,40 @@ export default function Contacts() {
 
           <button
             className="add-btn"
-            onClick={() =>
-              navigate("/add-contact")
-            }
+            onClick={() => navigate("/add-contact")}
           >
             <Plus size={18} />
             Add Contact
           </button>
-
         </div>
       </div>
 
       {/* Search + Filter */}
       <div className="toolbar">
-
         <div className="search-box">
-
           <Search size={18} />
 
           <input
             type="text"
             placeholder="Search by name, phone, cargo, AWB or destination"
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
           />
-
         </div>
 
         <button className="filter-btn">
           <Filter size={18} />
           Filter
         </button>
-
       </div>
+
+      {/* Contact count */}
+      {!loading && (
+        <div className="contacts-count">
+          Showing {filteredContacts.length} of{" "}
+          {pagination.total} contacts
+        </div>
+      )}
 
       {/* Error */}
       {error && (
@@ -209,103 +219,164 @@ export default function Contacts() {
       ) : filteredContacts.length === 0 ? (
         <p>No contacts found.</p>
       ) : (
+        <>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone Number</th>
+                  <th>Cargo Number</th>
+                  <th>Carton</th>
+                  <th>AWB</th>
+                  <th>Pieces</th>
+                  <th>KGs</th>
+                  <th>Amount</th>
+                  <th>Destination</th>
+                  <th>Due Date</th>
+                  <th>Birthday</th>
+                  <th>Appointment Date</th>
+                  <th>Remarks</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-        <div className="table-wrapper">
+              <tbody>
+                {filteredContacts.map((contact) => (
+                  <tr key={contact._id}>
+                    <td>{contact.name || "-"}</td>
 
-         <table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Phone Number</th>
-      <th>Cargo Number</th>
-      <th>Carton</th>
-      <th>AWB</th>
-      <th>Pieces</th>
-      <th>KGs</th>
-      <th>Amount</th>
-      <th>Destination</th>
-      <th>Due Date</th>
-      <th>Birthday</th>
-      <th>Appointment Date</th>
-      <th>Remarks</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
+                    <td>
+                      {contact.phoneNumber || "-"}
+                    </td>
 
-  <tbody>
-    {filteredContacts.map((contact) => (
-      <tr key={contact._id}>
-        <td>{contact.name || "-"}</td>
+                    <td>
+                      {contact.cargoNumber || "-"}
+                    </td>
 
-        <td>{contact.phoneNumber || "-"}</td>
+                    <td>
+                      {contact.carton || "-"}
+                    </td>
 
-        <td>{contact.cargoNumber || "-"}</td>
+                    <td>
+                      {contact.awb || "-"}
+                    </td>
 
-        <td>{contact.carton || "-"}</td>
+                    <td>
+                      {contact.pieces ?? "-"}
+                    </td>
 
-        <td>{contact.awb || "-"}</td>
+                    <td>
+                      {contact.kgs ?? "-"}
+                    </td>
 
-        <td>{contact.pieces ?? "-"}</td>
+                    <td>
+                      {contact.amount ?? "-"}
+                    </td>
 
-        <td>{contact.kgs ?? "-"}</td>
+                    <td>
+                      {contact.destination || "-"}
+                    </td>
 
-        <td>{contact.amount ?? "-"}</td>
+                    <td>
+                      {contact.dueDate
+                        ? new Date(
+                            contact.dueDate
+                          ).toLocaleDateString()
+                        : "-"}
+                    </td>
 
-        <td>{contact.destination || "-"}</td>
+                    <td>
+                      {contact.birthday
+                        ? new Date(
+                            contact.birthday
+                          ).toLocaleDateString()
+                        : "-"}
+                    </td>
 
-        <td>
-          {contact.dueDate
-            ? new Date(contact.dueDate).toLocaleDateString()
-            : "-"}
-        </td>
+                    <td>
+                      {contact.appointmentDate
+                        ? new Date(
+                            contact.appointmentDate
+                          ).toLocaleDateString()
+                        : "-"}
+                    </td>
 
-        <td>
-          {contact.birthday
-            ? new Date(contact.birthday).toLocaleDateString()
-            : "-"}
-        </td>
+                    <td>
+                      {contact.remarks || "-"}
+                    </td>
 
-        <td>
-          {contact.appointmentDate
-            ? new Date(contact.appointmentDate).toLocaleDateString()
-            : "-"}
-        </td>
+                    <td>
+                      {contact.status || "-"}
+                    </td>
 
-        <td>{contact.remarks || "-"}</td>
+                    <td>
+                      <div className="contact-actions">
+                        <button
+                          className="edit-btn"
+                          onClick={() =>
+                            navigate(
+                              `/edit-contact/${contact._id}`
+                            )
+                          }
+                          title="Edit contact"
+                        >
+                          <Pencil size={16} />
+                        </button>
 
-        <td>{contact.status || "-"}</td>
+                        <button
+                          className="delete-btn"
+                          onClick={() =>
+                            handleDelete(contact._id)
+                          }
+                          title="Delete contact"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-       <td>
-  <div className="contact-actions">
-    <button
-      className="edit-btn"
-      onClick={() =>
-        navigate(`/edit-contact/${contact._id}`)
-      }
-      title="Edit contact"
-    >
-      <Pencil size={16} />
-    </button>
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="pagination">
+              <button
+                onClick={() =>
+                  setPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={page === 1}
+              >
+                Previous
+              </button>
 
-    <button
-      className="delete-btn"
-      onClick={() => handleDelete(contact._id)}
-      title="Delete contact"
-    >
-      <Trash2 size={16} />
-    </button>
-  </div>
-</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+              <span>
+                Page {page} of {pagination.totalPages}
+              </span>
 
-        </div>
-
+              <button
+                onClick={() =>
+                  setPage((prev) =>
+                    Math.min(
+                      prev + 1,
+                      pagination.totalPages
+                    )
+                  )
+                }
+                disabled={
+                  page === pagination.totalPages
+                }
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
-
     </div>
   );
 }
