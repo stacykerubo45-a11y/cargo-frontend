@@ -28,81 +28,90 @@ export default function SendSms() {
   const token = localStorage.getItem("token");
 
   // Load contacts and templates
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError("");
+ 
+useEffect(() => {
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        if (!token) {
-          throw new Error("You are not logged in.");
+      if (!token) {
+        throw new Error("You are not logged in.");
+      }
+
+      // Load templates
+      const templatesResponse = await fetch(
+        "https://salihiyamaritimeairltd.co.ke/api/templates",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
-        const [contactsResponse, templatesResponse] =
-          await Promise.all([
-            fetch(
-              "https://salihiyamaritimeairltd.co.ke/api/contacts?limit=100",
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            ),
+      const templatesResult = await templatesResponse.json();
 
-            fetch(
-              "https://salihiyamaritimeairltd.co.ke/api/templates",
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            ),
-          ]);
+      if (!templatesResponse.ok) {
+        throw new Error(
+          templatesResult.message || "Failed to load templates"
+        );
+      }
 
-        const contactsResult =
-          await contactsResponse.json();
+      // Load all contacts page by page
+      let allContacts = [];
+      let page = 1;
+      let totalPages = 1;
 
-        const templatesResult =
-          await templatesResponse.json();
+      do {
+        const contactsResponse = await fetch(
+          `https://salihiyamaritimeairltd.co.ke/api/contacts?page=${page}&limit=100`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const contactsResult = await contactsResponse.json();
 
         if (!contactsResponse.ok) {
           throw new Error(
-            contactsResult.message ||
-              "Failed to load contacts"
+            contactsResult.message || "Failed to load contacts"
           );
         }
 
-        if (!templatesResponse.ok) {
-          throw new Error(
-            templatesResult.message ||
-              "Failed to load templates"
-          );
-        }
+        const pageContacts =
+          contactsResult.data?.contacts || [];
 
-        setContacts(
-          contactsResult.data?.contacts || []
-        );
+        allContacts = [...allContacts, ...pageContacts];
 
-        setTemplates(
-          templatesResult.data?.templates || []
-        );
-      } catch (error) {
-        console.error(
-          "Load SMS data error:",
-          error
-        );
+        totalPages =
+          contactsResult.data?.pagination?.totalPages || 1;
 
-        setError(
-          error.message ||
-            "Unable to load contacts and templates"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+        page++;
+      } while (page <= totalPages);
 
-    loadData();
-  }, [token]);
+      setContacts(allContacts);
+
+      setTemplates(
+        templatesResult.data?.templates || []
+      );
+    } catch (error) {
+      console.error("Load SMS data error:", error);
+
+      setError(
+        error.message ||
+          "Unable to load contacts and templates"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadData();
+}, [token]);
+
+
 
   // Select / deselect contact
   const toggleContact = (contactId) => {
