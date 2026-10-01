@@ -20,14 +20,14 @@
   justify-content: center;
   gap: 18px;
   margin: 25px 0;
-  padding: 16px 20px;
+  padding: 10px 30px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
 }
 
 .pagination button {
-  padding: 9px 18px;
+  padding: 8px 30px;
   border: 1px solid #d1d5db;
   border-radius: 7px;
   background: #ffffff;
@@ -39,8 +39,8 @@
 }
 
 .pagination button:hover:not(:disabled) {
-  background: #f28c28;
-  border-color: #f28c28;
+  background: rgb(68, 115, 68);
+  border-color: #0eb725;
   color: #ffffff;
 }
 
