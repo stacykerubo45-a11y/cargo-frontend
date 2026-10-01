@@ -53,6 +53,7 @@ export default function Contacts() {
           result.message || "Failed to load contacts"
         );
       }
+      
 
       const contactsData =
         result.data?.contacts || [];
@@ -67,13 +68,7 @@ export default function Contacts() {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Search by multiple contact fields
-  const filteredContacts = contacts.filter(
-    (contact) => {
-      const searchText = search.toLowerCase();
-      const handleDelete = async (contactId) => {
+  }; const handleDelete = async (contactId) => {
   const confirmed = window.confirm(
     "Are you sure you want to delete this contact?"
   );
@@ -109,6 +104,12 @@ export default function Contacts() {
     setError(error.message || "Unable to delete contact");
   }
 };
+
+  // Search by multiple contact fields
+  const filteredContacts = contacts.filter(
+    (contact) => {
+      const searchText = search.toLowerCase();
+     
       return (
         contact.name
           ?.toLowerCase()
