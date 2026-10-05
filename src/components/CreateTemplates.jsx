@@ -245,6 +245,10 @@ export default function CreateTemplate() {
 <li><strong>{"{{carton}}"}</strong> - Carton</li>
 <li><strong>{"{{awb}}"}</strong> - AWB</li>
 <li><strong>{"{{destination}}"}</strong> - Destination</li>
+<li><strong>{"{{pieces}}"}</strong> - Pieces</li>
+<li><strong>{"{{weight}}"}</strong> - Weight</li>
+<li><strong>{"{{remarks}}"}</strong> - Remarks</li>
+<li><strong>{"{{amount}}"}</strong> - Amount</li>
             </ul>
 
             <p>
